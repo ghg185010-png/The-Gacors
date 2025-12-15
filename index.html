@@ -1,0 +1,2294 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxe Slots - Diamond Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Lato:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- Variabel CSS & Gaya Umum --- */
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-purple: #1a0b2e;
+            --accent-gold: #d4af37;
+            --accent-light-gold: #f4e4a6;
+            --accent-diamond: #b9f2ff;
+            --text-color: #f0f0f0;
+            --reel-bg: #111111;
+            --font-title: 'Cinzel', serif;
+            --font-body: 'Lato', sans-serif;
+            --symbol-height: 130px;
+            --reel-width: 110px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(138, 43, 226, 0.1) 0%, transparent 50%);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- Disclaimer Modal --- */
+        #disclaimer-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        #disclaimer-modal.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .disclaimer-content {
+            background: linear-gradient(145deg, #1f1f1f, #0f0f0f);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            border: 2px solid var(--accent-gold);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+            transform: scale(1);
+            transition: transform 0.5s ease;
+            position: relative;
+        }
+
+        #disclaimer-modal.hidden .disclaimer-content {
+            transform: scale(0.8);
+        }
+
+        .disclaimer-content h2 {
+            font-family: var(--font-title);
+            font-size: 2rem;
+            color: var(--accent-light-gold);
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px var(--accent-gold);
+        }
+
+        .disclaimer-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #ccc;
+            font-size: 1.1rem;
+        }
+
+        .disclaimer-content a {
+            color: var(--accent-diamond);
+            text-decoration: none;
+        }
+
+        .disclaimer-content a:hover {
+            text-decoration: underline;
+        }
+
+        .disclaimer-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        #start-game-button {
+            font-family: var(--font-body);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--bg-dark);
+            background: linear-gradient(145deg, var(--accent-gold), var(--accent-light-gold));
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #start-game-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .warning-icon {
+            font-size: 3rem;
+            color: var(--accent-gold);
+            margin-bottom: 15px;
+        }
+
+        /* --- Main Game Container (Hidden by default) --- */
+        .main-wrapper {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-wrapper.visible {
+            opacity: 1;
+        }
+
+        /* --- Diamond Sparkle Effect --- */
+        .sparkle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0;
+            box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8);
+            animation: sparkle-animation 3s linear infinite;
+        }
+
+        @keyframes sparkle-animation {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+        }
+
+        /* --- Dragon Background Animation --- */
+        .dragon-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .dragon {
+            position: absolute;
+            width: 300px;
+            height: 150px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.2;
+            filter: drop-shadow(0 0 10px var(--accent-gold));
+            transition: opacity 0.5s ease;
+        }
+
+        .dragon1 {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50"><path d="M10,25 Q20,5 40,10 T70,15 Q90,20 95,35 Q90,45 70,40 T40,35 Q20,30 10,25" fill="%23d4af37"/></svg>');
+            top: 10%;
+            animation: fly1 20s linear infinite;
+        }
+
+        .dragon2 {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50"><path d="M10,25 Q20,5 40,10 T70,15 Q90,20 95,35 Q90,45 70,40 T40,35 Q20,30 10,25" fill="%23a0357a"/></svg>');
+            top: 40%;
+            animation: fly2 25s linear infinite;
+            animation-delay: -5s;
+        }
+
+        .dragon3 {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50"><path d="M10,25 Q20,5 40,10 T70,15 Q90,20 95,35 Q90,45 70,40 T40,35 Q20,30 10,25" fill="%23f4e4a6"/></svg>');
+            top: 70%;
+            animation: fly3 30s linear infinite;
+            animation-delay: -10s;
+        }
+
+        .dragon-fire {
+            position: absolute;
+            width: 100px;
+            height: 30px;
+            background: linear-gradient(90deg, transparent, rgba(255, 69, 0, 0.7), transparent);
+            border-radius: 50%;
+            filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .dragon1 .dragon-fire {
+            top: 20px;
+            right: -50px;
+            animation: fire1 20s linear infinite;
+        }
+
+        .dragon2 .dragon-fire {
+            top: 20px;
+            right: -50px;
+            animation: fire2 25s linear infinite;
+            animation-delay: -5s;
+        }
+
+        .dragon3 .dragon-fire {
+            top: 20px;
+            right: -50px;
+            animation: fire3 30s linear infinite;
+            animation-delay: -10s;
+        }
+
+        @keyframes fly1 {
+            0% {
+                left: -300px;
+                transform: translateY(0);
+            }
+
+            25% {
+                transform: translateY(-20px);
+            }
+
+            50% {
+                transform: translateY(10px);
+            }
+
+            75% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                left: 100%;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fly2 {
+            0% {
+                left: -300px;
+                transform: translateY(0);
+            }
+
+            25% {
+                transform: translateY(15px);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+
+            75% {
+                transform: translateY(10px);
+            }
+
+            100% {
+                left: 100%;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fly3 {
+            0% {
+                left: -300px;
+                transform: translateY(0);
+            }
+
+            25% {
+                transform: translateY(-10px);
+            }
+
+            50% {
+                transform: translateY(20px);
+            }
+
+            75% {
+                transform: translateY(-5px);
+            }
+
+            100% {
+                left: 100%;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fire1 {
+
+            0%,
+            70% {
+                opacity: 0;
+            }
+
+            75% {
+                opacity: 0.7;
+            }
+
+            90% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes fire2 {
+
+            0%,
+            60% {
+                opacity: 0;
+            }
+
+            65% {
+                opacity: 0.7;
+            }
+
+            80% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes fire3 {
+
+            0%,
+            80% {
+                opacity: 0;
+            }
+
+            85% {
+                opacity: 0.7;
+            }
+
+            95% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* --- Kontainer Game Utama --- */
+        .game-container-luxe {
+            text-align: center;
+            background: linear-gradient(145deg, #1f1f1f, #0f0f0f);
+            padding: 2.5rem;
+            border-radius: 25px;
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.7),
+                0 0 120px rgba(212, 175, 55, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            position: relative;
+            max-width: 800px;
+            width: 90%;
+            animation: fadeIn 0.8s ease-out;
+            z-index: 1;
+            margin-bottom: 20px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .game-container-luxe::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--accent-gold), var(--bg-purple), var(--accent-gold));
+            border-radius: 25px;
+            z-index: -1;
+            opacity: 0.5;
+            animation: border-glow 5s linear infinite;
+        }
+
+        @keyframes border-glow {
+
+            0%,
+            100% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        h1 {
+            font-family: var(--font-title);
+            font-size: 3.5rem;
+            color: var(--accent-light-gold);
+            text-shadow: 0 0 15px var(--accent-gold);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        h1::after {
+            content: 'Diamond Edition';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: var(--accent-diamond);
+            opacity: 0.9;
+        }
+
+        /* --- Progressive Jackpot --- */
+        .jackpot-container {
+            background: linear-gradient(145deg, rgba(212, 175, 55, 0.2), rgba(185, 242, 255, 0.2));
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .jackpot-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                left: -100%;
+            }
+
+            20% {
+                left: 100%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        .jackpot-label {
+            font-family: var(--font-title);
+            font-size: 1.2rem;
+            color: var(--accent-light-gold);
+            margin-bottom: 5px;
+        }
+
+        .jackpot-amount {
+            font-family: var(--font-title);
+            font-size: 2rem;
+            color: var(--accent-diamond);
+            text-shadow: 0 0 10px var(--accent-diamond);
+        }
+
+        /* --- Mesin Slot --- */
+        .slot-machine-luxe {
+            position: relative;
+            background-color: var(--reel-bg);
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+        }
+
+        .reels-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .reel-luxe {
+            width: var(--reel-width);
+            height: var(--symbol-height);
+            background: linear-gradient(180deg, #2a2a2a, #1a1a1a);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5), 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+
+        .reel-strip {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            /* Transisi untuk efek berhenti, diatur oleh JS */
+        }
+
+        /* Animation for the fast spin */
+        .reel-strip.spinning {
+            animation: spin-fast 0.1s linear infinite;
+        }
+
+        @keyframes spin-fast {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(-130px);
+            }
+        }
+
+        .symbol {
+            height: var(--symbol-height);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4.5rem;
+            user-select: none;
+            transition: transform 0.3s ease;
+        }
+
+        .symbol.winning {
+            animation: symbol-win 0.5s ease-in-out;
+        }
+
+        @keyframes symbol-win {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        .win-line-luxe {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            right: 20px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+            z-index: 10;
+            transform: translateY(-50%);
+            opacity: 0.6;
+            transition: all 0.5s ease;
+        }
+
+        /* Efek menang */
+        .game-container-luxe.winning .win-line-luxe {
+            animation: win-pulse 1s ease-in-out;
+        }
+
+        @keyframes win-pulse {
+
+            0%,
+            100% {
+                opacity: 0.6;
+                box-shadow: 0 0 5px var(--accent-gold);
+            }
+
+            50% {
+                opacity: 1;
+                box-shadow: 0 0 20px 5px var(--accent-gold);
+            }
+        }
+
+        /* --- Panel Info & Kontrol --- */
+        .info-display-luxe {
+            display: flex;
+            justify-content: space-around;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            flex-grow: 1;
+            transition: all 0.3s ease;
+        }
+
+        .info-box:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .label {
+            font-size: 0.75rem;
+            color: #aaa;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+        }
+
+        .info-box span:last-child {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .win-box span:last-child {
+            color: var(--accent-light-gold);
+        }
+
+        .controls-luxe {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        #spin-button,
+        #bet-button,
+        #auto-spin-button {
+            font-family: var(--font-body);
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--bg-dark);
+            background: linear-gradient(145deg, var(--accent-gold), var(--accent-light-gold));
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+            flex-grow: 1;
+        }
+
+        #bet-button,
+        #auto-spin-button {
+            background: linear-gradient(145deg, #555, #777);
+            color: var(--text-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        #spin-button:hover:not(:disabled),
+        #bet-button:hover:not(:disabled),
+        #auto-spin-button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        #spin-button:disabled,
+        #bet-button:disabled,
+        #auto-spin-button:disabled {
+            background: #444;
+            color: #888;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        #auto-spin-button.active {
+            background: linear-gradient(145deg, #8b0000, #dc143c);
+            color: white;
+        }
+
+        /* --- Pesan & Panel Pengaturan --- */
+        .message-luxe {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(10, 10, 10, 0.9);
+            color: var(--accent-light-gold);
+            padding: 2rem 3rem;
+            border-radius: 15px;
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: var(--font-title);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border: 2px solid var(--accent-gold);
+            text-shadow: 0 0 10px var(--accent-gold);
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .message-luxe.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            pointer-events: auto;
+            /* Allow clicking the close button */
+        }
+
+        .message-close-btn {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .message-close-btn:hover {
+            color: #fff;
+            transform: scale(1.2);
+        }
+
+        .settings-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .settings-panel h3 {
+            margin-top: 0;
+            color: var(--accent-light-gold);
+            font-weight: 600;
+            font-family: var(--font-title);
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .setting-item label {
+            font-size: 0.9rem;
+            color: #e0e0e0;
+        }
+
+        #rtpSlider,
+        #volumeSlider {
+            flex-grow: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: #333;
+            border-radius: 5px;
+            outline: none;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        #rtpSlider:hover,
+        #volumeSlider:hover {
+            opacity: 1;
+        }
+
+        #rtpSlider::-webkit-slider-thumb,
+        #volumeSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        #rtpSlider::-moz-range-thumb,
+        #volumeSlider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        #rtpValue,
+        #volumeValue {
+            min-width: 45px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--accent-light-gold);
+        }
+
+        #applySettingsButton {
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--bg-dark);
+            background: var(--accent-gold);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+
+        #applySettingsButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        /* --- Achievement Panel --- */
+        .achievement-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .achievement-panel h3 {
+            margin-top: 0;
+            color: var(--accent-light-gold);
+            font-weight: 600;
+            font-family: var(--font-title);
+            margin-bottom: 15px;
+        }
+
+        .achievement-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .achievement {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .achievement.unlocked {
+            background: linear-gradient(145deg, var(--accent-gold), var(--accent-light-gold));
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .achievement:hover {
+            transform: scale(1.1);
+        }
+
+        .achievement-tooltip {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .achievement:hover .achievement-tooltip {
+            opacity: 1;
+        }
+
+        /* --- Free Spins Panel --- */
+        .free-spins-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(10, 10, 10, 0.95);
+            color: var(--accent-light-gold);
+            padding: 2rem;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: var(--font-title);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border: 2px solid var(--accent-gold);
+            text-shadow: 0 0 10px var(--accent-gold);
+            z-index: 100;
+            text-align: center;
+        }
+
+        .free-spins-panel.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .free-spins-count {
+            font-size: 3rem;
+            color: var(--accent-gold);
+            margin: 1rem 0;
+        }
+
+        /* --- Partikel Efek --- */
+        .particles-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 99;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        /* --- Fire Effect Overlay --- */
+        .fire-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            display: none;
+        }
+
+        .fire-overlay.active {
+            display: block;
+        }
+
+        .fire-particle {
+            position: absolute;
+            bottom: -80px;
+            background: radial-gradient(circle, #fff700, #ffaa00, #ff4500, transparent 70%);
+            border-radius: 50%;
+            opacity: 0;
+            mix-blend-mode: screen;
+            animation: fireRise 2.5s infinite ease-out;
+        }
+
+        @keyframes fireRise {
+            0% {
+                transform: translateY(0) scale(1) translateX(0);
+                opacity: 0;
+            }
+
+            15% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-120vh) scale(3) translateX(var(--drift));
+                opacity: 0;
+            }
+        }
+
+        /* --- Disclaimer --- */
+        .disclaimer {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            font-size: 0.8rem;
+            color: #aaa;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .disclaimer h3 {
+            color: var(--accent-light-gold);
+            margin-bottom: 10px;
+            font-family: var(--font-title);
+        }
+
+        .disclaimer p {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .disclaimer a {
+            color: var(--accent-diamond);
+            text-decoration: none;
+        }
+
+        .disclaimer a:hover {
+            text-decoration: underline;
+        }
+
+        /* --- Tombol Menu Utama --- */
+        .home-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, rgba(30, 30, 30, 0.8), rgba(10, 10, 10, 0.9));
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: var(--font-body);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .home-button:hover {
+            background: var(--accent-gold);
+            color: var(--bg-dark);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* --- Responsif --- */
+        @media (max-width: 600px) {
+            .game-container-luxe {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .reel-luxe {
+                width: 85px;
+                height: 100px;
+            }
+
+            .symbol {
+                height: 100px;
+                font-size: 3.5rem;
+            }
+
+            @keyframes spin-fast {
+                100% {
+                    transform: translateY(-100px);
+                }
+            }
+
+            .info-display-luxe {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .info-box {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            .controls-luxe {
+                flex-direction: column;
+            }
+
+            .disclaimer-content {
+                padding: 20px;
+            }
+
+            .disclaimer-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Disclaimer Modal -->
+    <div id="disclaimer-modal">
+        <div class="disclaimer-content">
+            <div class="warning-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h2>Penting: Peringatan Bertanggung Jawab</h2>
+            <p>Permainan ini <strong>hanya untuk tujuan hiburan</strong> dan tidak melibatkan uang sungguhan atau hadiah
+                fisik.</p>
+            <p>Permainan ini <strong>tidak terkait dengan judi online asli</strong> dan tidak ada transaksi keuangan
+                yang terjadi.</p>
+            <p>Ingatlah selalu untuk bermain secara bertanggung jawab dan waspadai terhadap bahaya perjudian.</p>
+            <p>Jika Anda atau orang yang Anda kenal mengalami masalah dengan perjudian, segera cari bantuan profesional.
+            </p>
+            <div class="disclaimer-buttons">
+                <button id="start-game-button">Saya Mengerti, Mainkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Game Wrapper (Initially Hidden) -->
+    <div class="main-wrapper" id="main-wrapper">
+        <button id="homeButton" class="home-button">
+            <i class="fas fa-home"></i> Menu
+        </button>
+
+        <!-- Sparkle Effect -->
+        <div class="sparkle-container" id="sparkleContainer"></div>
+
+        <!-- Dragon Background -->
+        <div class="dragon-bg">
+            <div class="dragon dragon1">
+                <div class="dragon-fire"></div>
+            </div>
+            <div class="dragon dragon2">
+                <div class="dragon-fire"></div>
+            </div>
+            <div class="dragon dragon3">
+                <div class="dragon-fire"></div>
+            </div>
+        </div>
+
+        <main class="game-container-luxe">
+            <h1>The Gacors</h1>
+
+            <!-- Progressive Jackpot -->
+            <div class="jackpot-container">
+                <div class="jackpot-label">PROGRESSIVE JACKPOT</div>
+                <div class="jackpot-amount" id="jackpot-amount">5000</div>
+            </div>
+
+            <section class="slot-machine-luxe">
+                <div class="reels-container">
+                    <div class="reel-luxe">
+                        <div class="reel-strip"></div>
+                    </div>
+                    <div class="reel-luxe">
+                        <div class="reel-strip"></div>
+                    </div>
+                    <div class="reel-luxe">
+                        <div class="reel-strip"></div>
+                    </div>
+                    <div class="reel-luxe">
+                        <div class="reel-strip"></div>
+                    </div>
+                    <div class="reel-luxe">
+                        <div class="reel-strip"></div>
+                    </div>
+                    <div class="reel-luxe">
+                        <div class="reel-strip"></div>
+                    </div>
+                </div>
+                <div class="win-line-luxe"></div>
+            </section>
+
+            <div class="info-display-luxe">
+                <div class="info-box balance-box">
+                    <span class="label">Saldo</span>
+                    <span id="balance-amount">1000</span>
+                </div>
+                <div class="info-box bet-box">
+                    <span class="label">Taruhan</span>
+                    <span id="bet-amount">10</span>
+                </div>
+                <div class="info-box win-box">
+                    <span class="label">Menang</span>
+                    <span id="win-amount">0</span>
+                </div>
+            </div>
+
+            <div class="controls-luxe">
+                <button id="bet-button">Ubah Taruhan</button>
+                <button id="spin-button">PUTAR</button>
+                <button id="auto-spin-button">AUTO</button>
+            </div>
+
+            <div id="message-luxe" class="message-luxe"></div>
+            <div id="free-spins-panel" class="free-spins-panel">
+                <div>FREE SPINS!</div>
+                <div class="free-spins-count" id="free-spins-count">10</div>
+                <div>Putaran Gratis Tersisa</div>
+            </div>
+
+            <div class="settings-panel">
+                <h3>Pengaturan Game</h3>
+                <div class="setting-item">
+                    <label for="rtpSlider">Persentase Kemenangan (RTP)</label>
+                    <input type="range" id="rtpSlider" name="rtpSlider" min="10" max="80" value="30" step="5">
+                    <span id="rtpValue">30%</span>
+                </div>
+                <div class="setting-item">
+                    <label for="volumeSlider">Volume Suara</label>
+                    <input type="range" id="volumeSlider" name="volumeSlider" min="0" max="100" value="50" step="10">
+                    <span id="volumeValue">50%</span>
+                </div>
+                <button id="applySettingsButton">Terapkan Pengaturan</button>
+            </div>
+
+            <div class="achievement-panel">
+                <h3>Pencapaian</h3>
+                <div class="achievement-container">
+                    <div class="achievement" data-achievement="first-win">
+                        <i class="fas fa-trophy"></i>
+                        <div class="achievement-tooltip">Kemenangan Pertama</div>
+                    </div>
+                    <div class="achievement" data-achievement="big-win">
+                        <i class="fas fa-gem"></i>
+                        <div class="achievement-tooltip">Kemenangan Besar</div>
+                    </div>
+                    <div class="achievement" data-achievement="jackpot">
+                        <i class="fas fa-crown"></i>
+                        <div class="achievement-tooltip">Jackpot</div>
+                    </div>
+                    <div class="achievement" data-achievement="free-spins">
+                        <i class="fas fa-star"></i>
+                        <div class="achievement-tooltip">Free Spins</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Disclaimer -->
+        <div class="disclaimer">
+            <h3>Disclaimer & Peringatan</h3>
+            <p>Permainan ini hanya untuk tujuan hiburan dan tidak melibatkan uang sungguhan.</p>
+            <p>Tidak ada pembayaran uang nyata atau hadiah fisik yang diberikan. .</p>
+            <p>Jika Anda atau orang yang Anda kenal memiliki masalah dengan perjudian,Tolong di ingatkan akan bahaya
+                judi.</p>
+            <p>© 2026 The GAcors - Diamond Edition. Semua hak dilindungi.</p>
+        </div>
+    </div>
+
+    <!-- Elemen Audio (Placeholder, ganti src dengan file suara Anda) -->
+    <!-- Audio Elements (SFX Only - Placeholder as files are missing) -->
+    <!-- spinSound removed (replaced by procedural SFX) -->
+    <audio id="winSound" src="win.mp3" preload="auto"></audio>
+    <audio id="loseSound" src="lose.mp3" preload="auto"></audio>
+    <audio id="bigWinSound" src="bigwin.mp3" preload="auto"></audio>
+    <audio id="freeSpinsSound" src="freespins.mp3" preload="auto"></audio>
+    <!-- Background Music removed (Replaced by AmbientGenerator) -->
+
+    <script>
+        // --- KELAS AUDIO AMBIENT (OFFLINE GENERATOR) ---
+        // --- CASINO LOUNGE AUDIO GENERATOR (OFFLINE) ---
+        class AmbientAudio {
+            constructor() {
+                this.ctx = null;
+                this.masterGain = null;
+                this.isPlaying = false;
+                this.baseVolume = 0.3;
+                this.tempo = 120;
+                this.nextNoteTime = 0.0;
+                this.timerID = null;
+                this.beatCount = 0;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                    this.masterGain = this.ctx.createGain();
+                    this.masterGain.connect(this.ctx.destination);
+                    this.masterGain.gain.value = this.baseVolume;
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            start() {
+                if (this.isPlaying || !this.ctx) return;
+                this.isPlaying = true;
+                this.nextNoteTime = this.ctx.currentTime + 0.1;
+                this.scheduler();
+            }
+
+            scheduler() {
+                if (!this.isPlaying) return;
+                // Lookahead: 0.1s
+                while (this.nextNoteTime < this.ctx.currentTime + 0.1) {
+                    this.scheduleNote(this.beatCount, this.nextNoteTime);
+                    this.nextNoteTime += (60.0 / this.tempo) / 4; // 16th notes
+                    this.beatCount++;
+                }
+                this.timerID = setTimeout(() => this.scheduler(), 25);
+            }
+
+            scheduleNote(beatNumber, time) {
+                // Generate a "Lobby/Casino" Jazz Loop
+                const sixteenth = beatNumber % 16;
+                const measure = Math.floor(beatNumber / 16) % 4; // 4 bar loop
+
+                // 1. Walking Bass (Quarter notes)
+                if (sixteenth % 4 === 0) {
+                    let freq = 0;
+                    // Progression: Cm7 | Fm7 | G7 | Cm7
+                    if (measure === 0) { // Cm7
+                        const bass = [130.81, 155.56, 196.00, 233.08]; // C, Eb, G, Bb
+                        freq = bass[(sixteenth / 4) % 4] / 2; // Octave down
+                    } else if (measure === 1) { // Fm7
+                        const bass = [174.61, 207.65, 261.63, 311.13]; // F, Ab, C, Eb
+                        freq = bass[(sixteenth / 4) % 4] / 2;
+                    } else if (measure === 2) { // G7
+                        const bass = [196.00, 246.94, 293.66, 349.23]; // G, B, D, F
+                        freq = bass[(sixteenth / 4) % 4] / 2;
+                    } else { // Cm7
+                        const bass = [130.81, 116.54, 98.00, 77.78]; // C, Bb, G, Eb (Descending)
+                        freq = bass[(sixteenth / 4) % 4] / 2;
+                    }
+                    this.playTone(freq, 'triangle', 0.2, time, 0.4);
+                }
+
+                // 2. High Hat / Shaker (16th notes)
+                // Filtered noise burst
+                this.playHiHat(time, sixteenth % 4 === 0 ? 0.05 : 0.02);
+
+                // 3. Electric Piano Chords (Off beats - Charleston rhythm)
+                // Hits on beat 1 (sometimes) and "and of 2"
+                const keysRhythm = [1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                if (keysRhythm[sixteenth]) {
+                    this.playChord(measure, time);
+                }
+
+                // 4. Random Casino "Bleeps" (Very sparse)
+                if (Math.random() < 0.02) {
+                    const bleeps = [523.25, 659.25, 783.99, 1046.50]; // C Major Pentatonic high
+                    const freq = bleeps[Math.floor(Math.random() * bleeps.length)];
+                    this.playTone(freq, 'sine', 0.1, time, 0.1);
+                }
+            }
+
+            playTone(freq, type, duration, time, vol) {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+
+                gain.gain.setValueAtTime(0, time);
+                gain.gain.linearRampToValueAtTime(vol, time + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+
+                osc.connect(gain);
+                gain.connect(this.masterGain);
+
+                osc.start(time);
+                osc.stop(time + duration);
+            }
+
+            playChord(measure, time) {
+                // Simple triads/7ths
+                let freqs = [];
+                if (measure === 0 || measure === 3) freqs = [261.63, 311.13, 392.00, 466.16]; // Cm7
+                if (measure === 1) freqs = [349.23, 415.30, 523.25, 622.25]; // Fm7
+                if (measure === 2) freqs = [392.00, 493.88, 587.33, 698.46]; // G7
+
+                freqs.forEach(f => {
+                    this.playTone(f, 'sine', 0.3, time, 0.05);
+                });
+            }
+
+            playHiHat(time, vol) {
+                const bufferSize = this.ctx.sampleRate * 0.05; // 50ms
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                const bandpass = this.ctx.createBiquadFilter();
+                bandpass.type = 'bandpass';
+                bandpass.frequency.value = 8000;
+
+                const gain = this.ctx.createGain();
+                gain.gain.value = vol;
+
+                noise.connect(bandpass);
+                bandpass.connect(gain);
+                gain.connect(this.masterGain);
+
+                noise.start(time);
+            }
+
+            setVolume(val) {
+                this.baseVolume = val;
+                if (this.masterGain) {
+                    this.masterGain.gain.setTargetAtTime(val, this.ctx.currentTime, 0.1);
+                }
+            }
+
+            stop() {
+                this.isPlaying = false;
+                if (this.timerID) clearTimeout(this.timerID);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const disclaimerModal = document.getElementById('disclaimer-modal');
+            const mainWrapper = document.getElementById('main-wrapper');
+            const startGameButton = document.getElementById('start-game-button');
+
+            if (sessionStorage.getItem('disclaimerSeen') === 'true') {
+                disclaimerModal.classList.add('hidden');
+                mainWrapper.classList.add('visible');
+            }
+
+            function startGame() {
+                disclaimerModal.classList.add('hidden');
+                mainWrapper.classList.add('visible');
+                sessionStorage.setItem('disclaimerSeen', 'true');
+
+                // Start Ambient Music
+                if (window.ambientAudio) {
+                    window.ambientAudio.init();
+                    window.ambientAudio.start();
+                }
+            }
+
+            startGameButton.addEventListener('click', startGame);
+
+            // Home Button Logic
+            const homeButton = document.getElementById('homeButton');
+            homeButton.addEventListener('click', () => {
+                sessionStorage.removeItem('disclaimerSeen');
+                window.location.reload();
+            });
+
+            // --- ELEMEN DOM ---
+            const spinButton = document.getElementById('spin-button');
+            const betButton = document.getElementById('bet-button');
+            const autoSpinButton = document.getElementById('auto-spin-button');
+            const balanceDisplay = document.getElementById('balance-amount');
+            const betDisplay = document.getElementById('bet-amount');
+            const winDisplay = document.getElementById('win-amount');
+            const jackpotDisplay = document.getElementById('jackpot-amount');
+            const messageEl = document.getElementById('message-luxe');
+            const freeSpinsPanel = document.getElementById('free-spins-panel');
+            const freeSpinsCount = document.getElementById('free-spins-count');
+            const gameContainer = document.querySelector('.game-container-luxe');
+            const reelStrips = document.querySelectorAll('.reel-strip');
+            const sparkleContainer = document.getElementById('sparkleContainer');
+
+            // Elemen Audio
+            const loseSound = document.getElementById('loseSound');
+            const freeSpinsSound = document.getElementById('freeSpinsSound');
+            // const bgMusic = document.getElementById('bgMusic'); // Replaced by AmbientAudio
+
+            // Elemen Pengaturan
+            const rtpSlider = document.getElementById('rtpSlider');
+            const rtpValueDisplay = document.getElementById('rtpValue');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const volumeValueDisplay = document.getElementById('volumeValue');
+            const applySettingsButton = document.getElementById('applySettingsButton');
+
+            // --- KONFIGURASI PERMAINAN ---
+            const symbols = ['🐉', '🐅', '🐇', '💰', '🏮', '❤', '💎', '⭐'];
+            const symbolHeight = 130; // Harus sama dengan tinggi .symbol di CSS
+            let balance = 1000;
+            let currentBet = 10;
+            let isSpinning = false;
+            let winPercentage = 0.30; // Nilai awal, akan diperbarui oleh slider
+            let soundVolume = 0.5; // Volume suara awal
+            let autoSpinActive = false;
+            let freeSpinsRemaining = 0;
+            let totalWin = 0;
+            let jackpotAmount = 5000;
+            let winStreak = 0;
+
+            // Tabel pembayaran (kombinasi: pengali taruhan)
+            const payouts = {
+                '🐉🐉🐉': 100, // Naga (Jackpot)
+                '💎💎💎': 50,  // Berlian
+                '💰💰💰': 30,  // Koin
+                '🐅🐅🐅': 20,  // Macan
+                '❤❤❤': 15,   // Angpao
+                '🏮🏮🏮': 10,  // Lampion
+                '🐇🐇🐇': 8,   // Kelinci
+                '⭐⭐⭐': 5,   // Bintang
+                '⭐⭐': 2,     // Dua bintang
+                '⭐': 1       // Satu bintang
+            };
+
+            // Achievement tracking
+            const achievements = {
+                'first-win': false,
+                'big-win': false,
+                'jackpot': false,
+                'free-spins': false
+            };
+
+            // --- INISIALISASI GAME ---
+            function init() {
+                // Initialize Ambient Audio Class First
+                window.ambientAudio = new AmbientAudio();
+
+                updateDisplay();
+                createReelStrips();
+                createSparkles();
+                rtpValueDisplay.textContent = `${Math.round(winPercentage * 100)}%`;
+                volumeValueDisplay.textContent = `${Math.round(soundVolume * 100)}%`;
+
+                if (window.ambientAudio) {
+                    window.ambientAudio.setVolume(soundVolume);
+                }
+
+                // Update jackpot setiap 5 detik
+                setInterval(() => {
+                    if (jackpotAmount < 10000) {
+                        jackpotAmount += Math.floor(Math.random() * 50) + 10;
+                        jackpotDisplay.textContent = jackpotAmount;
+                    }
+                }, 5000);
+            }
+
+            // --- FUNGSI UTAMA ---
+            function createReelStrips() {
+                // Buat strip simbol yang panjang untuk efek putaran yang mulus
+                const stripLength = 20;
+                reelStrips.forEach(strip => {
+                    strip.innerHTML = ''; // Kosongkan dulu
+                    for (let i = 0; i < stripLength; i++) {
+                        const symbolElement = document.createElement('div');
+                        symbolElement.className = 'symbol';
+                        // Isi dengan simbol acak
+                        symbolElement.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                        strip.appendChild(symbolElement);
+                    }
+                });
+            }
+
+            function createSparkles() {
+                // Buat efek kilau berlian
+                for (let i = 0; i < 30; i++) {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+
+                    // Posisi acak
+                    const left = Math.random() * 100;
+                    const top = Math.random() * 100;
+                    sparkle.style.left = `${left}%`;
+                    sparkle.style.top = `${top}%`;
+
+                    // Penundaan animasi acak
+                    const delay = Math.random() * 3;
+                    sparkle.style.animationDelay = `${delay}s`;
+
+                    sparkleContainer.appendChild(sparkle);
+                }
+            }
+
+            function spin() {
+                if (isSpinning || (balance < currentBet && freeSpinsRemaining <= 0)) {
+                    if (balance < currentBet && freeSpinsRemaining <= 0) {
+                        showMessage('Saldo Tidak Cukup!', false);
+                        playLoseSFX();
+                    }
+                    return;
+                }
+
+                isSpinning = true;
+
+                // Kurangi saldo atau free spins
+                if (freeSpinsRemaining > 0) {
+                    freeSpinsRemaining--;
+                    updateFreeSpinsDisplay();
+                } else {
+                    balance -= currentBet;
+                }
+
+                updateDisplay();
+                hideMessage();
+                gameContainer.classList.remove('winning');
+                spinButton.disabled = true;
+                betButton.disabled = true;
+                autoSpinButton.disabled = true;
+
+                playSpinSFX(); // Mainkan efek suara spin yang digenerate
+
+                // Mulai animasi putaran
+                reelStrips.forEach(strip => {
+                    strip.classList.add('spinning');
+                    strip.style.transition = 'none'; // Nonaktifkan transisi saat spin cepat
+                });
+
+                // Tentukan hasil putaran (menang atau kalah)
+                const finalSymbols = determineOutcome();
+
+                // Hentikan setiap reel secara bertahap
+                setTimeout(() => stopReel(0, finalSymbols[0]), 1000);
+                setTimeout(() => stopReel(1, finalSymbols[1]), 1300);
+                setTimeout(() => stopReel(2, finalSymbols[2]), 1600);
+                setTimeout(() => stopReel(3, finalSymbols[3]), 1900);
+                setTimeout(() => stopReel(4, finalSymbols[4]), 2200);
+                setTimeout(() => stopReel(5, finalSymbols[5]), 2500);
+
+                // Cek hasil setelah semua reel berhenti
+                setTimeout(() => {
+                    checkWin(finalSymbols);
+                    isSpinning = false;
+                    spinButton.disabled = false;
+                    betButton.disabled = false;
+                    autoSpinButton.disabled = false;
+
+                    // Jika auto spin aktif, lanjutkan putaran
+                    if (autoSpinActive && balance >= currentBet) {
+                        setTimeout(() => spin(), 1000);
+                    } else if (autoSpinActive && balance < currentBet) {
+                        toggleAutoSpin();
+                        showMessage('Saldo Tidak Cukup! Auto Spin Dihentikan.', false);
+                    }
+                }, 3000); // Durasi total untuk semua animasi selesai
+            }
+
+            function stopReel(index, symbolToShow) {
+                const strip = reelStrips[index];
+                const symbolsInStrip = strip.querySelectorAll('.symbol');
+                const middleIndex = Math.floor(symbolsInStrip.length / 2);
+
+                // 1. Hentikan animasi putaran cepat
+                strip.classList.remove('spinning');
+
+                // 2. Setel simbol akhir
+                symbolsInStrip[middleIndex].textContent = symbolToShow;
+
+                // 3. Hitung posisi akhir yang diinginkan
+                const targetPosition = -(middleIndex * symbolHeight);
+
+                // 4. Buat posisi "pra-berhenti" yang berada beberapa simbol di atas target
+                const preStopPosition = targetPosition - (symbolHeight * 3);
+
+                // 5. Paksa browser untuk merender perubahan tanpa transisi
+                strip.style.transition = 'none';
+                strip.style.transform = `translateY(${preStopPosition}px)`;
+
+                // 6. Di frame berikutnya, terapkan transisi akhir yang mulus
+                requestAnimationFrame(() => {
+                    strip.style.transition = `transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+                    strip.style.transform = `translateY(${targetPosition}px)`;
+
+                    // 7. Tambahkan animasi kemenangan setelah transisi selesai
+                    strip.addEventListener('transitionend', () => {
+                        symbolsInStrip[middleIndex].classList.add('winning');
+                        setTimeout(() => {
+                            symbolsInStrip[middleIndex].classList.remove('winning');
+                        }, 500);
+                    }, { once: true });
+                });
+            }
+
+            function determineOutcome() {
+                const shouldWin = Math.random() < winPercentage;
+                let finalSymbols = [];
+
+                if (shouldWin) {
+                    // Pilih kombinasi pemenang secara acak
+                    const winningCombos = Object.keys(payouts);
+                    const randomWin = winningCombos[Math.floor(Math.random() * winningCombos.length)];
+                    finalSymbols = randomWin.split('');
+
+                    // Jika panjangnya kurang dari 6, tambahkan simbol acak
+                    while (finalSymbols.length < 6) {
+                        finalSymbols.push(symbols[Math.floor(Math.random() * symbols.length)]);
+                    }
+                } else {
+                    // Buat kombinasi yang dijamin kalah
+                    let isLosingCombo = false;
+                    while (!isLosingCombo) {
+                        finalSymbols = [
+                            symbols[Math.floor(Math.random() * symbols.length)],
+                            symbols[Math.floor(Math.random() * symbols.length)],
+                            symbols[Math.floor(Math.random() * symbols.length)],
+                            symbols[Math.floor(Math.random() * symbols.length)],
+                            symbols[Math.floor(Math.random() * symbols.length)],
+                            symbols[Math.floor(Math.random() * symbols.length)]
+                        ];
+                        const result = finalSymbols.join('');
+                        if (!payouts[result]) {
+                            isLosingCombo = true;
+                        }
+                    }
+                }
+                return finalSymbols;
+            }
+
+            function checkWin(finalSymbols) {
+                const resultString = finalSymbols.join('');
+                const payoutResult = payouts[resultString] || 0;
+                let winAmount = 0;
+
+                if (payoutResult > 0) {
+                    // Apply win streak multiplier
+                    winStreak++;
+                    const multiplier = winStreak > 1 ? 1 + (winStreak - 1) * 0.1 : 1;
+                    winAmount = currentBet * payoutResult * multiplier;
+
+                    balance += winAmount;
+                    totalWin += winAmount;
+                    winDisplay.textContent = winAmount;
+                    gameContainer.classList.add('winning');
+
+                    // Tampilkan pesan yang berbeda berdasarkan besarnya kemenangan
+                    if (resultString === '🐉🐉🐉') {
+                        // Jackpot!
+                        winAmount = jackpotAmount;
+                        balance += jackpotAmount - (currentBet * payoutResult * multiplier); // Adjust for previous addition
+                        totalWin += jackpotAmount - (currentBet * payoutResult * multiplier);
+                        winDisplay.textContent = winAmount;
+                        showMessage(`JACKPOT! ${winAmount}!`, true);
+                        playWinSFX('jackpot');
+                        triggerDragonCelebration();
+                        createParticles();
+                        triggerJackpotFire();
+
+                        // Reset jackpot
+                        jackpotAmount = 1000;
+                        jackpotDisplay.textContent = jackpotAmount;
+
+                        // Unlock achievement
+                        unlockAchievement('jackpot');
+
+                        // Berikan free spins untuk jackpot
+                        freeSpinsRemaining += 10;
+                        updateFreeSpinsDisplay();
+                        showFreeSpinsPanel();
+                    } else if (winAmount >= currentBet * 20) {
+                        showMessage(`KEMENANGAN BESAR! ${winAmount}!`, true);
+                        playWinSFX('big');
+                        createParticles();
+
+                        // Unlock achievement
+                        unlockAchievement('big-win');
+                    } else {
+                        showMessage(`ANDA MENANG ${winAmount}!`, true);
+                        playWinSFX('normal');
+
+                        // Unlock first win achievement
+                        if (!achievements['first-win']) {
+                            unlockAchievement('first-win');
+                        }
+                    }
+
+                    // Tambahkan efek naga khusus untuk kemenangan besar
+                    if (resultString === '💎💎💎' || resultString === '💰💰💰') {
+                        triggerDragonCelebration();
+                    }
+                } else {
+                    winStreak = 0; // Reset win streak
+                    winDisplay.textContent = 0;
+                    showMessage('Coba Lagi!', false);
+                    playLoseSFX();
+                }
+
+                updateDisplay();
+
+                if (balance <= 0 && freeSpinsRemaining <= 0) {
+                    showMessage("Game Over! Refresh untuk bermain lagi.", false);
+                    spinButton.disabled = true;
+                    autoSpinActive = false;
+                    autoSpinButton.classList.remove('active');
+                }
+            }
+
+            function changeBet() {
+                if (isSpinning) return;
+                // Logika perubahan taruhan: 10 -> 50 -> 100 -> 10
+                if (currentBet === 10) currentBet = 50;
+                else if (currentBet === 50) currentBet = 100;
+                else currentBet = 10;
+
+                updateDisplay();
+            }
+
+            function toggleAutoSpin() {
+                if (isSpinning) return;
+
+                autoSpinActive = !autoSpinActive;
+
+                if (autoSpinActive) {
+                    autoSpinButton.classList.add('active');
+                    autoSpinButton.textContent = 'STOP';
+                    spin();
+                } else {
+                    autoSpinButton.classList.remove('active');
+                    autoSpinButton.textContent = 'AUTO';
+                }
+            }
+
+            function unlockAchievement(achievementId) {
+                if (achievements[achievementId]) return;
+
+                achievements[achievementId] = true;
+
+                // Update UI
+                const achievementElement = document.querySelector(`[data-achievement="${achievementId}"]`);
+                if (achievementElement) {
+                    achievementElement.classList.add('unlocked');
+                }
+
+                // Show achievement message
+                const achievementNames = {
+                    'first-win': 'Kemenangan Pertama',
+                    'big-win': 'Kemenangan Besar',
+                    'jackpot': 'Jackpot',
+                    'free-spins': 'Free Spins'
+                };
+
+                showMessage(`Pencapaian Terbuka: ${achievementNames[achievementId]}!`, true);
+            }
+
+            // --- FUNGSI PENGATURAN ---
+            function updateRtpValue() {
+                rtpValueDisplay.textContent = `${rtpSlider.value}%`;
+            }
+
+            function updateVolumeValue() {
+                volumeValueDisplay.textContent = `${volumeSlider.value}%`;
+            }
+
+            function applySettings() {
+                winPercentage = parseInt(rtpSlider.value) / 100;
+                soundVolume = parseInt(volumeSlider.value) / 100;
+                setVolume(soundVolume);
+                showMessage(`Pengaturan Diterapkan! RTP: ${rtpSlider.value}%, Volume: ${volumeSlider.value}%`, true);
+                setTimeout(hideMessage, 2000);
+            }
+
+            function setVolume(volume) {
+                if (spinSound) spinSound.volume = volume;
+                if (winSound) winSound.volume = volume;
+                if (loseSound) loseSound.volume = volume;
+                if (bigWinSound) bigWinSound.volume = volume;
+                if (freeSpinsSound) freeSpinsSound.volume = volume;
+
+                // Update Ambient Audio Volume
+                if (window.ambientAudio) {
+                    window.ambientAudio.setVolume(volume * 0.5); // Max 50% volume for ambience
+                }
+            }
+
+            // --- FUNGSI BANTUAN ---
+            function updateDisplay() {
+                balanceDisplay.textContent = balance;
+                betDisplay.textContent = currentBet;
+            }
+
+            function updateFreeSpinsDisplay() {
+                freeSpinsCount.textContent = freeSpinsRemaining;
+
+                // Unlock achievement
+                if (freeSpinsRemaining > 0 && !achievements['free-spins']) {
+                    unlockAchievement('free-spins');
+                }
+            }
+
+            function showFreeSpinsPanel() {
+                freeSpinsPanel.classList.add('show');
+                playSound(freeSpinsSound);
+
+                setTimeout(() => {
+                    freeSpinsPanel.classList.remove('show');
+                }, 3000);
+            }
+
+            function showMessage(text, isWin) {
+                // Gunakan innerHTML agar bisa memasukkan tombol close
+                messageEl.innerHTML = `
+                    <span>${text}</span>
+                    <button class="message-close-btn" onclick="document.getElementById('message-luxe').classList.remove('show')">&times;</button>
+                `;
+                messageEl.style.color = isWin ? 'var(--accent-light-gold)' : '#ff6347';
+                messageEl.style.textShadow = isWin ? `0 0 10px var(--accent-gold)` : `0 0 10px #ff6347`;
+                messageEl.classList.add('show');
+            }
+
+            function hideMessage() {
+                messageEl.classList.remove('show');
+            }
+
+            function playSound(sound) {
+                if (sound) {
+                    sound.currentTime = 0;
+                    sound.play().catch(e => console.error("Error memainkan suara:", e));
+                }
+            }
+
+            // --- FUNGSI DRAGON CELEBRATION ---
+            function triggerDragonCelebration() {
+                const dragons = document.querySelectorAll('.dragon');
+                dragons.forEach(dragon => {
+                    // Buat naga lebih terang dan bergerak lebih cepat
+                    dragon.style.opacity = '0.8';
+                    dragon.style.filter = 'drop-shadow(0 0 20px var(--accent-gold))';
+
+                    // Kembalikan ke normal setelah 3 detik
+                    setTimeout(() => {
+                        dragon.style.opacity = '0.2';
+                        dragon.style.filter = 'drop-shadow(0 0 10px var(--accent-gold))';
+                    }, 3000);
+                });
+
+                // Tambahkan lebih banyak api
+                const dragonFires = document.querySelectorAll('.dragon-fire');
+                dragonFires.forEach(fire => {
+                    fire.style.opacity = '1';
+                    fire.style.height = '50px';
+                    fire.style.width = '150px';
+
+                    // Kembalikan ke normal setelah 3 detik
+                    setTimeout(() => {
+                        fire.style.opacity = '0';
+                        fire.style.height = '30px';
+                        fire.style.width = '100px';
+                    }, 3000);
+                });
+            }
+
+            // --- FUNGSI PARTIKEL ---
+            function createParticles() {
+                const particlesContainer = document.createElement('div');
+                particlesContainer.className = 'particles-container';
+                gameContainer.appendChild(particlesContainer);
+
+                // Buat 50 partikel
+                for (let i = 0; i < 50; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+
+                    // Ukuran acak
+                    const size = Math.random() * 10 + 5;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+
+                    // Posisi awal acak di sekitar tengah
+                    const startX = window.innerWidth / 2;
+                    const startY = window.innerHeight / 2;
+                    particle.style.left = `${startX}px`;
+                    particle.style.top = `${startY}px`;
+
+                    // Warna acak antara emas dan merah
+                    const colors = ['#d4af37', '#f4e4a6', '#ff6347', '#ff4500', '#b9f2ff'];
+                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+                    particlesContainer.appendChild(particle);
+
+                    // Animasi partikel
+                    const angle = Math.random() * Math.PI * 2;
+                    const velocity = Math.random() * 5 + 2;
+                    const lifetime = Math.random() * 1000 + 1000;
+
+                    let opacity = 1;
+                    let currentX = startX;
+                    let currentY = startY;
+
+                    const animateParticle = () => {
+                        currentX += Math.cos(angle) * velocity;
+                        currentY += Math.sin(angle) * velocity;
+                        opacity -= 0.02;
+
+                        particle.style.left = `${currentX}px`;
+                        particle.style.top = `${currentY}px`;
+                        particle.style.opacity = opacity;
+
+                        if (opacity > 0) {
+                            requestAnimationFrame(animateParticle);
+                        } else {
+                            particle.remove();
+                        }
+                    };
+
+                    // Mulai animasi setelah sedikit penundaan
+                    setTimeout(() => {
+                        particle.style.opacity = 1;
+                        requestAnimationFrame(animateParticle);
+                    }, Math.random() * 300);
+                }
+
+                // Hapus kontainer partikel setelah animasi selesai
+                setTimeout(() => {
+                    particlesContainer.remove();
+                }, 3000);
+            }
+
+            // --- FUNGSI EFEK API JACKPOT ---
+            function triggerJackpotFire() {
+                let fireOverlay = document.querySelector('.fire-overlay');
+                if (!fireOverlay) {
+                    fireOverlay = document.createElement('div');
+                    fireOverlay.className = 'fire-overlay';
+                    document.body.appendChild(fireOverlay);
+                }
+
+                fireOverlay.innerHTML = ''; // Bersihkan partikel sebelumnya
+                fireOverlay.classList.add('active');
+
+                // Intensitas api
+                const particleCount = 200;
+
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('fire-particle');
+
+                    // Randomize properties for organic fire look
+                    const size = Math.random() * 80 + 20; // 20px - 100px
+                    const left = Math.random() * 100; // 0% - 100%
+                    const delay = Math.random() * 2; // 0s - 2s spread
+                    const duration = Math.random() * 2 + 1.5; // 1.5s - 3.5s
+                    const drift = (Math.random() - 0.5) * 400; // Drift kiri/kanan lebih lebar
+
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.left = `${left}%`;
+                    particle.style.animationDelay = `${delay}s`;
+                    particle.style.animationDuration = `${duration}s`;
+                    particle.style.setProperty('--drift', `${drift}px`);
+
+                    // Variasi warna dan blur
+                    const hueShift = Math.random() * 40; // Shift warna sedikit
+                    particle.style.filter = `blur(${Math.random() * 10 + 5}px) hue-rotate(-${hueShift}deg)`;
+
+                    fireOverlay.appendChild(particle);
+                }
+
+                // Hentikan efek setelah 7 detik
+                setTimeout(() => {
+                    fireOverlay.classList.remove('active');
+                    // Bersihkan DOM setelah animasi selesai
+                    setTimeout(() => {
+                        if (!fireOverlay.classList.contains('active')) {
+                            fireOverlay.innerHTML = '';
+                        }
+                    }, 2000);
+                }, 7000);
+            }
+
+            function playSpinSFX() {
+                // Gunakan AudioContext dari ambientAudio jika ada, atau buat baru
+                const ctx = (window.ambientAudio && window.ambientAudio.ctx)
+                    ? window.ambientAudio.ctx
+                    : new (window.AudioContext || window.webkitAudioContext)();
+
+                if (ctx.state === 'suspended') ctx.resume();
+
+                const startTime = ctx.currentTime;
+                const duration = 2.5; // Durasi total putaran
+
+                // Efek Suara "Rolling" Mekanis
+                const masterGain = ctx.createGain();
+                masterGain.connect(ctx.destination);
+                masterGain.gain.value = 0.4; // Volume master sfx
+
+                // 1. Low Rumble (Motor)
+                const rumbleOsc = ctx.createOscillator();
+                const rumbleGain = ctx.createGain();
+                rumbleOsc.type = 'sawtooth';
+                rumbleOsc.frequency.setValueAtTime(60, startTime);
+                rumbleOsc.frequency.linearRampToValueAtTime(40, startTime + duration);
+
+                rumbleGain.gain.setValueAtTime(0.1, startTime);
+                rumbleGain.gain.linearRampToValueAtTime(0, startTime + duration);
+
+                rumbleOsc.connect(rumbleGain);
+                rumbleGain.connect(masterGain);
+                rumbleOsc.start(startTime);
+                rumbleOsc.stop(startTime + duration);
+
+                // 2. High Ticks (Reel Clicks)
+                // Kita jadwalkan serangkaian bunyi "klik" cepat
+                const tickCount = 30;
+                const tickInterval = duration / tickCount;
+
+                for (let i = 0; i < tickCount; i++) {
+                    const tickTime = startTime + (i * tickInterval);
+
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    // Variasi pitch sedikit agar tidak monoton
+                    osc.frequency.setValueAtTime(800 + (Math.random() * 200), tickTime);
+                    osc.type = 'square';
+
+                    gain.gain.setValueAtTime(0.1, tickTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, tickTime + 0.05);
+
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+
+                    osc.start(tickTime);
+                    osc.stop(tickTime + 0.05);
+                }
+            }
+
+            function playWinSFX(type) {
+                const ctx = (window.ambientAudio && window.ambientAudio.ctx)
+                    ? window.ambientAudio.ctx
+                    : new (window.AudioContext || window.webkitAudioContext)();
+
+                if (ctx.state === 'suspended') ctx.resume();
+
+                const now = ctx.currentTime;
+                const masterGain = ctx.createGain();
+                masterGain.connect(ctx.destination);
+                masterGain.gain.value = 0.3;
+
+                if (type === 'normal') {
+                    // Simple "Ding-Dong" (Major 3rd)
+                    // C5 (523.25) -> E5 (659.25)
+                    playTone(523.25, 'sine', 0.1, now, 0.5);
+                    playTone(659.25, 'sine', 0.4, now + 0.1, 0.3);
+                }
+                else if (type === 'big') {
+                    // Ascending Arpeggio (C Major)
+                    // C5, E5, G5, C6
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, i) => {
+                        playTone(freq, 'triangle', 0.2, now + (i * 0.1), 0.4);
+                    });
+                    // Final splash
+                    playTone(1046.50, 'sine', 0.8, now + 0.4, 0.5);
+                }
+                else if (type === 'jackpot') {
+                    // Intense Fanfare + Alarm
+                    // 1. Alarm Siren
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(800, now);
+                    osc.frequency.linearRampToValueAtTime(1200, now + 0.5);
+                    osc.frequency.linearRampToValueAtTime(800, now + 1.0);
+                    osc.frequency.linearRampToValueAtTime(1200, now + 1.5);
+
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 2.0);
+
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+                    osc.start(now);
+                    osc.stop(now + 2.0);
+
+                    // 2. Rapid Arpeggios
+                    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98];
+                    for (let n = 0; n < 20; n++) {
+                        const freq = notes[n % notes.length];
+                        playTone(freq, 'square', 0.1, now + (n * 0.08), 0.2);
+                    }
+                }
+
+                function playTone(freq, type, duration, time, vol) {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.value = freq;
+
+                    gain.gain.setValueAtTime(0, time);
+                    gain.gain.linearRampToValueAtTime(vol, time + 0.01);
+                    gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+
+                    osc.start(time);
+                    osc.stop(time + duration);
+                }
+            }
+
+            function playLoseSFX() {
+                const ctx = (window.ambientAudio && window.ambientAudio.ctx)
+                    ? window.ambientAudio.ctx
+                    : new (window.AudioContext || window.webkitAudioContext)();
+
+                if (ctx.state === 'suspended') ctx.resume();
+
+                const startTime = ctx.currentTime;
+
+                // "Wah-wah-wah" Effect (Descending Triad)
+                const masterGain = ctx.createGain();
+                masterGain.connect(ctx.destination);
+                masterGain.gain.value = 0.3;
+
+                const notes = [440, 415.30, 392.00, 369.99]; // A4, Ab4, G4, F#4
+                const noteDuration = 0.3;
+
+                notes.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, startTime + (i * noteDuration));
+                    // Slide down slightly at the end of each note
+                    osc.frequency.linearRampToValueAtTime(freq - 20, startTime + (i * noteDuration) + noteDuration - 0.05);
+
+                    gain.gain.setValueAtTime(0, startTime + (i * noteDuration));
+                    gain.gain.linearRampToValueAtTime(0.5, startTime + (i * noteDuration) + 0.05);
+                    gain.gain.linearRampToValueAtTime(0, startTime + (i * noteDuration) + noteDuration);
+
+                    osc.connect(gain);
+                    gain.connect(masterGain);
+                    osc.start(startTime + (i * noteDuration));
+                    osc.stop(startTime + (i * noteDuration) + noteDuration);
+                });
+            }
+
+            // --- EVENT LISTENERS ---
+            spinButton.addEventListener('click', spin);
+            betButton.addEventListener('click', changeBet);
+            autoSpinButton.addEventListener('click', toggleAutoSpin);
+            rtpSlider.addEventListener('input', updateRtpValue);
+            volumeSlider.addEventListener('input', updateVolumeValue);
+            applySettingsButton.addEventListener('click', applySettings);
+
+            // Jalankan inisialisasi saat halaman dimuat
+            init();
+        });
+    </script>
+</body>
+
+</html>
